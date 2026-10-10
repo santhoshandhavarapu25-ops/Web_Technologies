@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Validation — Week 05</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --bg-subtle: #f9fafb;
+            --border: #e5e7eb;
+            --border-hover: #d1d5db;
+            --text-main: #111827;
+            --text-muted: #4b5563;
+            --text-dim: #9ca3af;
+            --primary: #18181b;
+            --primary-hover: #27272a;
+            --accent: #2563eb;
+            --error: #dc2626;
+            --success: #16a34a;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+        }
+
+        .wrap {
+            max-width: 560px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: all 0.15s ease;
+        }
+
+        .back-link:hover {
+            color: var(--text-main);
+            border-color: var(--border-hover);
+            background: var(--bg-subtle);
+        }
+
+        .meta-pill {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .meta-pill strong {
+            color: var(--text-main);
+        }
+
+        /* ── HERO ── */
+        .hero {
+            padding: 40px 0 28px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 32px;
+        }
+
+        .hero-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .hero p {
+            font-size: 0.92rem;
+            color: var(--text-muted);
+        }
+
+        /* ── FORM CONTAINER ── */
+        .form-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 32px;
+            margin-bottom: 48px;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px 36px 10px 14px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-family: inherit;
+            color: var(--text-main);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(24, 24, 27, 0.08);
+        }
+
+        input.valid {
+            border-color: var(--success);
+        }
+
+        input.invalid {
+            border-color: var(--error);
+            background-color: #fef2f2;
+        }
+
+        .status-icon {
+            position: absolute;
+            right: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: none;
+        }
+
+        .toggle-btn {
+            position: absolute;
+            right: 32px;
+            background: none;
+            border: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .toggle-btn:hover {
+            color: var(--text-main);
+        }
+
+        .err-msg {
+            font-size: 0.74rem;
+            font-weight: 500;
+            color: var(--error);
+            margin-top: 4px;
+            display: none;
+        }
+
+        /* ── PASSWORD REQUIREMENTS CHECKLIST ── */
+        .req-box {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            margin-top: 8px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 12px;
+        }
+
+        .req-item {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        .req-item.met {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        /* ── RADIO GROUP ── */
+        .radio-row {
+            display: flex;
+            gap: 16px;
+            margin-top: 6px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.86rem;
+            font-weight: 500;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .radio-option input[type="radio"] {
+            accent-color: var(--primary);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 11px;
+            background: var(--primary);
+            color: #ffffff;
+            font-size: 0.88rem;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: background 0.15s ease;
+            margin-top: 12px;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-hover);
+        }
+
+        .success-banner {
+            display: none;
+            margin-top: 20px;
+            padding: 14px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            font-size: 0.85rem;
+            color: #166534;
+            font-weight: 600;
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 24px 0;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrap">
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <a class="back-link" href="../index.html">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            <span>Back to Lab Portal</span>
+        </a>
+        <div class="meta-pill">
+            <strong>S Sridinesh</strong> · Week 05
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <span class="hero-tag">Week 05 · JavaScript RegEx Validation</span>
+        <h1>Account Registration Form</h1>
+        <p>Client-side regular expression validation with live syntax checking and password constraints.</p>
+    </section>
+
+    <!-- FORM -->
+    <div class="form-card">
+        <form id="regForm" onsubmit="return handleFormSubmit(event)">
+
+            <!-- FIRST NAME -->
+            <div class="field">
+                <label for="fname">First Name</label>
+                <div class="input-wrap">
+                    <input type="text" id="fname" placeholder="Letters only" oninput="checkField('fname')">
+                    <span class="status-icon" id="fname-icon"></span>
+                </div>
+                <div class="err-msg" id="fname-msg">Only alphabetic characters (A-Z, a-z) are permitted.</div>
+            </div>
+
+            <!-- LAST NAME -->
+            <div class="field">
+                <label for="lname">Last Name</label>
+                <div class="input-wrap">
+                    <input type="text" id="lname" placeholder="Letters only" oninput="checkField('lname')">
+                    <span class="status-icon" id="lname-icon"></span>
+                </div>
+                <div class="err-msg" id="lname-msg">Only alphabetic characters (A-Z, a-z) are permitted.</div>
+            </div>
+
+            <!-- USERNAME -->
+            <div class="field">
+                <label for="uname">Username</label>
+                <div class="input-wrap">
+                    <input type="text" id="uname" placeholder="Start with a letter" oninput="checkField('uname')">
+                    <span class="status-icon" id="uname-icon"></span>
+                </div>
+                <div class="err-msg" id="uname-msg">Must start with a letter and contain 4-20 alphanumeric characters or dots.</div>
+            </div>
+
+            <!-- EMAIL -->
+            <div class="field">
+                <label for="email">Email Address</label>
+                <div class="input-wrap">
+                    <input type="email" id="email" placeholder="name@domain.com" oninput="checkField('email')">
+                    <span class="status-icon" id="email-icon"></span>
+                </div>
+                <div class="err-msg" id="email-msg">Enter a valid email address format.</div>
+            </div>
+
+            <!-- PASSWORD -->
+            <div class="field">
+                <label for="pwd">Password</label>
+                <div class="input-wrap">
+                    <input type="password" id="pwd" placeholder="Min 8 chars with uppercase, number & symbol" oninput="checkPassword()">
+                    <button type="button" class="toggle-btn" onclick="togglePassword('pwd', this)">Show</button>
+                    <span class="status-icon" id="pwd-icon"></span>
+                </div>
+                
+                <div class="req-box">
+                    <div class="req-item" id="r-len">○ 8+ Characters</div>
+                    <div class="req-item" id="r-upper">○ 1+ Uppercase letter</div>
+                    <div class="req-item" id="r-num">○ 1+ Numeric digit</div>
+                    <div class="req-item" id="r-sym">○ 1+ Symbol (@#$%^&amp;+=)</div>
+                </div>
+            </div>
+
+            <!-- CONFIRM PASSWORD -->
+            <div class="field">
+                <label for="cpwd">Confirm Password</label>
+                <div class="input-wrap">
+                    <input type="password" id="cpwd" placeholder="Re-enter password" oninput="checkConfirmPassword()">
+                    <button type="button" class="toggle-btn" onclick="togglePassword('cpwd', this)">Show</button>
+                    <span class="status-icon" id="cpwd-icon"></span>
+                </div>
+                <div class="err-msg" id="cpwd-msg">Passwords do not match.</div>
+            </div>
+
+            <!-- MOBILE -->
+            <div class="field">
+                <label for="mobile">Mobile Number (India)</label>
+                <div class="input-wrap">
+                    <input type="text" id="mobile" placeholder="10-digit number starting with 6-9" oninput="checkField('mobile')">
+                    <span class="status-icon" id="mobile-icon"></span>
+                </div>
+                <div class="err-msg" id="mobile-msg">Enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.</div>
+            </div>
+
+            <!-- GENDER -->
+            <div class="field">
+                <label>Gender</label>
+                <div class="radio-row">
+                    <label class="radio-option">
+                        <input type="radio" name="gender" value="male" checked> Male
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="gender" value="female"> Female
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="gender" value="other"> Other
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Submit Registration</button>
+        </form>
+
+        <div class="success-banner" id="successBanner">
+            Registration form validated successfully. All fields meet regulatory criteria.
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        S Sridinesh · 25885A0549 · CSE-G · Vardhaman College of Engineering
+    </footer>
+</div>
+
+<script>
+    const rules = {
+        fname:  { re: /^[A-Za-z]+$/ },
+        lname:  { re: /^[A-Za-z]+$/ },
+        uname:  { re: /^[a-zA-Z][a-zA-Z0-9._]{3,19}$/ },
+        email:  { re: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
+        mobile: { re: /^[6-9]\d{9}$/ }
+    };
+
+    function checkField(id) {
+        const input = document.getElementById(id);
+        const icon = document.getElementById(id + '-icon');
+        const msg = document.getElementById(id + '-msg');
+        const rule = rules[id];
+
+        if (!rule) return true;
+        const val = input.value.trim();
+
+        if (val === '') {
+            input.classList.remove('valid', 'invalid');
+            icon.style.display = 'none';
+            msg.style.display = 'none';
+            return false;
+        }
+
+        const ok = rule.re.test(val);
+        icon.style.display = 'block';
+
+        if (ok) {
+            input.classList.add('valid');
+            input.classList.remove('invalid');
+            icon.textContent = '✓';
+            icon.style.color = '#16a34a';
+            msg.style.display = 'none';
+            return true;
+        } else {
+            input.classList.add('invalid');
+            input.classList.remove('valid');
+            icon.textContent = '✕';
+            icon.style.color = '#dc2626';
+            msg.style.display = 'block';
+            return false;
+        }
+    }
+
+    function checkPassword() {
+        const input = document.getElementById('pwd');
+        const val = input.value;
+        const icon = document.getElementById('pwd-icon');
+
+        if (val === '') {
+            input.classList.remove('valid', 'invalid');
+            icon.style.display = 'none';
+            updateReq('r-len', false);
+            updateReq('r-upper', false);
+            updateReq('r-num', false);
+            updateReq('r-sym', false);
+            return false;
+        }
+
+        const len = val.length >= 8;
+        const upper = /[A-Z]/.test(val);
+        const num = /[0-9]/.test(val);
+        const sym = /[@#$%^&+=!]/.test(val);
+
+        updateReq('r-len', len);
+        updateReq('r-upper', upper);
+        updateReq('r-num', num);
+        updateReq('r-sym', sym);
+
+        const ok = len && upper && num && sym;
+        icon.style.display = 'block';
+
+        if (ok) {
+            input.classList.add('valid');
+            input.classList.remove('invalid');
+            icon.textContent = '✓';
+            icon.style.color = '#16a34a';
+        } else {
+            input.classList.add('invalid');
+            input.classList.remove('valid');
+            icon.textContent = '✕';
+            icon.style.color = '#dc2626';
+        }
+
+        checkConfirmPassword();
+        return ok;
+    }
+
+    function updateReq(id, met) {
+        const el = document.getElementById(id);
+        if (met) {
+            el.classList.add('met');
+            el.innerHTML = '● ' + el.textContent.substring(2);
+        } else {
+            el.classList.remove('met');
+            el.innerHTML = '○ ' + el.textContent.substring(2);
+        }
+    }
+
+    function checkConfirmPassword() {
+        const pwd = document.getElementById('pwd').value;
+        const cpwd = document.getElementById('cpwd');
+        const icon = document.getElementById('cpwd-icon');
+        const msg = document.getElementById('cpwd-msg');
+
+        if (cpwd.value === '') {
+            cpwd.classList.remove('valid', 'invalid');
+            icon.style.display = 'none';
+            msg.style.display = 'none';
+            return false;
+        }
+
+        icon.style.display = 'block';
+        if (cpwd.value === pwd && pwd !== '') {
+            cpwd.classList.add('valid');
+            cpwd.classList.remove('invalid');
+            icon.textContent = '✓';
+            icon.style.color = '#16a34a';
+            msg.style.display = 'none';
+            return true;
+        } else {
+            cpwd.classList.add('invalid');
+            cpwd.classList.remove('valid');
+            icon.textContent = '✕';
+            icon.style.color = '#dc2626';
+            msg.style.display = 'block';
+            return false;
+        }
+    }
+
+    function togglePassword(fieldId, btn) {
+        const input = document.getElementById(fieldId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            btn.textContent = 'Hide';
+        } else {
+            input.type = 'password';
+            btn.textContent = 'Show';
+        }
+    }
+
+    function handleFormSubmit(e) {
+        e.preventDefault();
+
+        const v1 = checkField('fname');
+        const v2 = checkField('lname');
+        const v3 = checkField('uname');
+        const v4 = checkField('email');
+        const v5 = checkPassword();
+        const v6 = checkConfirmPassword();
+        const v7 = checkField('mobile');
+
+        if (v1 && v2 && v3 && v4 && v5 && v6 && v7) {
+            document.getElementById('successBanner').style.display = 'block';
+            document.getElementById('successBanner').scrollIntoView({ behavior: 'smooth' });
+        } else {
+            alert('Please complete all required fields according to the validation rules.');
+        }
+
+        return false;
+    }
+</script>
+
+</body>
+</html>

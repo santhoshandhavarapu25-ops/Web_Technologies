@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Store — Week 01</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --bg-subtle: #f9fafb;
+            --border: #e5e7eb;
+            --border-hover: #d1d5db;
+            --text-main: #111827;
+            --text-muted: #4b5563;
+            --text-dim: #9ca3af;
+            --primary: #18181b;
+            --primary-hover: #27272a;
+            --accent: #2563eb;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+        }
+
+        .wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: all 0.15s ease;
+        }
+
+        .back-link:hover {
+            color: var(--text-main);
+            border-color: var(--border-hover);
+            background: var(--bg-subtle);
+        }
+
+        .meta-pill {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .meta-pill strong {
+            color: var(--text-main);
+        }
+
+        /* ── HERO ── */
+        .hero {
+            padding: 48px 0 36px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.8rem, 3vw, 2.4rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .hero p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            max-width: 600px;
+        }
+
+        /* ── PRODUCT CARDS ── */
+        .products-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            padding: 40px 0 64px;
+        }
+
+        .product-card {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            overflow: hidden;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .product-card:hover {
+            border-color: var(--border-hover);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+        }
+
+        .product-img-box {
+            background: var(--bg-subtle);
+            border-right: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+        }
+
+        .product-img-box img {
+            width: 100%;
+            max-width: 240px;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+
+        .product-details {
+            padding: 32px 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .product-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        .product-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-main);
+        }
+
+        .product-category {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 18px;
+        }
+
+        /* ── SPECS TABLE ── */
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+        }
+
+        .specs-table tr {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .specs-table tr:last-child {
+            border-bottom: none;
+        }
+
+        .specs-table td {
+            padding: 8px 0;
+            font-size: 0.85rem;
+        }
+
+        .specs-table .lbl {
+            color: var(--text-muted);
+            width: 35%;
+            font-weight: 500;
+        }
+
+        .specs-table .val {
+            color: var(--text-main);
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 9px 18px;
+            background: var(--primary);
+            color: #ffffff;
+            font-size: 0.84rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            transition: background 0.15s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 9px 16px;
+            background: #ffffff;
+            color: var(--text-muted);
+            font-size: 0.84rem;
+            font-weight: 500;
+            text-decoration: none;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: all 0.15s ease;
+        }
+
+        .btn-secondary:hover {
+            color: var(--text-main);
+            border-color: var(--border-hover);
+            background: var(--bg-subtle);
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 24px 0;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .product-card {
+                grid-template-columns: 1fr;
+            }
+            .product-img-box {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 24px;
+            }
+            .product-details {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrap">
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <a class="back-link" href="../index.html">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            <span>Back to Lab Portal</span>
+        </a>
+        <div class="meta-pill">
+            <strong>S Sridinesh</strong> · Week 01
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <span class="hero-tag">Week 01 · Static HTML Catalog</span>
+        <h1>Mobile Store Product Catalog</h1>
+        <p>A structured product catalog displaying device features, pricing tables, specifications, and linked detail sub-pages.</p>
+    </section>
+
+    <!-- PRODUCTS -->
+    <div class="products-grid">
+
+        <!-- SAMSUNG GALAXY S22 -->
+        <article class="product-card">
+            <div class="product-img-box">
+                <img src="https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=500&h=500&fit=crop" alt="Samsung Galaxy S22 5G">
+            </div>
+            <div class="product-details">
+                <div>
+                    <div class="product-header">
+                        <div>
+                            <h2 class="product-name">Samsung Galaxy S22 5G</h2>
+                            <div class="product-category">Flagship Tier · Dual SIM</div>
+                        </div>
+                        <div class="product-price">₹72,999</div>
+                    </div>
+
+                    <table class="specs-table">
+                        <tr><td class="lbl">Display</td><td class="val">6.1" Dynamic AMOLED 2X, 120Hz</td></tr>
+                        <tr><td class="lbl">Processor</td><td class="val">Snapdragon 8 Gen 1 (4nm)</td></tr>
+                        <tr><td class="lbl">Memory</td><td class="val">8 GB RAM · 128 GB Storage</td></tr>
+                        <tr><td class="lbl">Camera</td><td class="val">50 MP + 12 MP + 10 MP Triple</td></tr>
+                        <tr><td class="lbl">Battery</td><td class="val">3,700 mAh (25W Fast Charge)</td></tr>
+                    </table>
+                </div>
+
+                <div class="action-row">
+                    <a class="btn-primary" href="s22.html">Full Specifications →</a>
+                    <a class="btn-secondary" href="https://youtu.be/C8Axygwyweg" target="_blank" rel="noopener">Watch Video</a>
+                </div>
+            </div>
+        </article>
+
+        <!-- REDMI 12C -->
+        <article class="product-card">
+            <div class="product-img-box">
+                <img src="https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=500&h=500&fit=crop" alt="Redmi 12C">
+            </div>
+            <div class="product-details">
+                <div>
+                    <div class="product-header">
+                        <div>
+                            <h2 class="product-name">Redmi 12C</h2>
+                            <div class="product-category">Budget Tier · Dual SIM</div>
+                        </div>
+                        <div class="product-price">₹8,999</div>
+                    </div>
+
+                    <table class="specs-table">
+                        <tr><td class="lbl">Display</td><td class="val">6.71" HD+ Dot Drop Display</td></tr>
+                        <tr><td class="lbl">Processor</td><td class="val">MediaTek Helio G85 Octa-Core</td></tr>
+                        <tr><td class="lbl">Memory</td><td class="val">4 GB RAM · 64 GB Storage</td></tr>
+                        <tr><td class="lbl">Camera</td><td class="val">50 MP AI Dual Camera</td></tr>
+                        <tr><td class="lbl">Battery</td><td class="val">5,000 mAh High-Capacity</td></tr>
+                    </table>
+                </div>
+
+                <div class="action-row">
+                    <a class="btn-primary" href="12c.html">Full Specifications →</a>
+                    <a class="btn-secondary" href="https://www.youtube.com/watch?v=j-EILr-KFQA" target="_blank" rel="noopener">Watch Video</a>
+                </div>
+            </div>
+        </article>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        S Sridinesh · 25885A0549 · CSE-G · Vardhaman College of Engineering
+    </footer>
+</div>
+
+</body>
+</html>
